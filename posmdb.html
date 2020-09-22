@@ -1,0 +1,556 @@
+<?php
+
+session_start();
+
+// if( !isset($_SESSION['id']) || (trim($_SESSION['id']) == '')){
+//     header('location:index.php');
+//     exit();
+// }
+//include('session.php');
+//Require our config file with our DB details
+require_once('config.php');
+
+ mb_internal_encoding("UTF-8");         
+
+            $query=mysqli_query($mysqli, "select * from login where userid='".$_SESSION['id']."'");
+            $row =mysqli_fetch_assoc($query);
+            $sql = mysqli_query($mysqli, "Select * from klanten order by Voornaam ASC");
+            $cat1 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 1");
+            $cat2 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 2");
+            $cat3 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 3");
+            $cat4 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 4");
+            $cat5 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 5");
+            $cat6 = mysqli_query($mysqli, "select * from behandelingen where ser_Id = 6");
+            $cat11 = mysqli_query($mysqli, "SELECT producten.SubCatId, producten.prodName, producten.prodSalPrice, btn_colors.Color From producten, btn_colors where SUBSTRING(producten.SubCatId,1,2) = 11 and producten.SubCatId = btn_colors.SubCatID order by producten.SubCatId ASC");
+            $cat21 = mysqli_query($mysqli, "SELECT producten.SubCatId, producten.prodName, producten.prodSalPrice, btn_colors.Color From producten, btn_colors where SUBSTRING(producten.SubCatId,1,2) = 21 and producten.SubCatId = btn_colors.SubCatID order by producten.SubCatId ASC");
+            $cat31 = mysqli_query($mysqli, "SELECT producten.SubCatId, producten.prodName, producten.prodSalPrice, btn_colors.Color From producten, btn_colors where SUBSTRING(producten.SubCatId,1,2) = 31 and producten.SubCatId = btn_colors.SubCatID order by producten.SubCatId ASC");
+            $cat41 = mysqli_query($mysqli, "SELECT producten.SubCatId, producten.prodName, producten.prodSalPrice, btn_colors.Color From producten, btn_colors where SUBSTRING(producten.SubCatId,1,2) = 41 and producten.SubCatId = btn_colors.SubCatID order by producten.SubCatId ASC");
+            $cat51 = mysqli_query($mysqli, "SELECT producten.SubCatId, producten.prodName, producten.prodSalPrice, btn_colors.Color From producten, btn_colors where SUBSTRING(producten.SubCatId,1,2) = 51 and producten.SubCatId = btn_colors.SubCatID order by producten.SubCatId ASC");
+            
+            $sql9 = mysqli_query($mysqli, "select * from producten where cat_id = 1 order by prodName ASC");
+            $sql10 = mysqli_query($mysqli, "select * from product_cat");
+            $sql11 = mysqli_query($mysqli, "select * from product_cat where ID < 61");
+            
+            $sql7 = mysqli_query($mysqli, "select * from services");
+            $sql8 = mysqli_query($mysqli, "select ser_class, ser_Naam from services");
+            $periode = date("Y-m"); 
+
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Exzellence - Kassa</title>
+    <!-- Custom Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Alex+Brush" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="css/addons/datatables.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/posmdb.css" rel="stylesheet">
+</head>
+
+<body>
+    <header class="rgba-stylish-slight">
+        <div class="logo logo-font">Exzellence</div>
+        <div class="menu d-inline-flex justify-content-end pr-5">
+            <button id="b_ANK" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#modalAddKlant"><i class="fas fa-user-plus"></i></button>
+            <a type="button" class="btn btn-lg btn-outline-default mx-1 p-4" href="dashboard.php"><i class="fas fa-home"></i></a>
+            <a type="button" class="btn btn-lg btn-outline-info mx-1 p-4" href="logout.php"><i class="fas fa-sign-out-alt"></i></a>
+
+        </div>
+        <div class="header-divider"></div>
+
+    </header>
+    
+    <div class="success_msg">
+
+        </div>
+
+    <main>
+        <div class="left">
+            <div class="user-controls grey lighten-3">
+                <div class="inner-user-controls d-inline-flex justify-content-start pl-5">
+
+                    <!-- <div class="input-group-prepend">
+                            <label class="input-group-text" for="SelectCust">Klant</label>
+                        </div> -->
+                    <select class="browser-default custom-select selectcus" name="e_klant" id="SelectCust">
+
+                        <option value="2" disabled selected>Selecteer Klant...</option>
+                        <? while($row=mysqli_fetch_array($sql)){
+                                echo '<option value="'.$row['ID'].'">'.$row['Voornaam'].' '.$row['Achternaam'].'</option>';
+                            }
+                            ?>
+                    </select>
+                    
+
+
+
+<!--                    <button type="button" class="btn btn-dark m-2 NewCus">Nieuwe klant</button>-->
+
+                    <!--                        <button type="button" class="btn btn-dark m-2 CusCard" disabled>Klantenkaart</button>-->
+
+                </div>
+
+            </div>
+            <div class="data-screen">
+                <div class="inner-screen table-responsive-md">
+                    <table id="tblscreen" class="table table-light table-striped table-sm">
+                        <thead class="mdb-color lighten-1 text-white">
+                            <tr class="tblhead">
+                                <th scope="col" class="d-none">ID</th>
+                                <th scope="col">Datum</th>
+                                <th scope="col" class="d-none">Tijd</th>
+                                <th scope="col">Behandeling</th>
+                                <th scope="col">Prijs</th>
+                                <th scope="col" class="d-none">Jaar</th>
+                                <th scope="col" class="d-none">Soort</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="screenBody">
+
+                        </tbody>
+
+
+                    </table>
+                </div>
+
+            </div>
+            <div class="data-total">
+                <div class="inner-total mb-3">
+                    <table id="tbltotals" class="table table-light table-striped table-sm">
+                        <tbody class="mdb-color lighten-1 text-white">
+                            <tr class="tijd">
+                                <th>Datum:</th>
+                                <th></th>
+                                <td class="date"></td>
+                            </tr>
+                            <tr class="omzet">
+                                <th>Totaal:</th>
+                                <th>€</th>
+                                <td class="income"></td>
+                            </tr>
+                            <tr class="mvh">
+                                <th>btw</th>
+                                <th>&euro;</th>
+                                <td data-periode="<? echo $periode; ?> " class="btw"></td>
+                            </tr>
+                            <tr class="total">
+                                <th>Totaal:</th>
+                                <th>€</th>
+                                <td class="sum"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="right">
+
+            <div class="typcopa grey lighten-3">
+
+                <div class="inner-typcopa d-flex flex-row justify-content-around">
+
+                    <button id="selbeh" class="btn btn-lg btn-primary btn-rounded" data-clss="sercopas"><i class="fas fa-spa mr-1 p-2"></i> Behandelingen</button>
+                    <button id="selpro" class="btn btn-lg btn-primary btn-rounded" data-clss="sercopap"><i class="fas fa-mortar-pestle mr-1 p-2"></i> Producten</button>
+
+                </div>
+
+            </div>
+            <!-- Service control Panel -->
+            <div class="sercopas d-none">
+                <div class="inner-sercopas d-flex flex-row justify-content-around">
+
+                    <nav class="w-100 nav-fill ">
+                        <div class="container">
+                            <ul class="nav md-tabs nav-justified mdb-color lighten-1 mx-0 mb-0 mt-1">
+                                <? 
+                                            while ($row8 = mysqli_fetch_array($sql8)){
+                                                $ref="#";
+                                                echo '  <li class="nav-item seritm">
+                                                          <a class="nav-link" href="#' .$row8['ser_class']. '">'.$row8['ser_Naam'].'</a>
+                                                        </li>';
+                                            }
+                                        
+                                        ?>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+
+
+            <!-- Service control Panel -->
+            <div class="sercopap d-none">
+                <div class="inner-sercopap d-flex flex-row justify-content-around">
+
+                    <nav class="w-100 nav-fill ">
+                        <div class="container">
+                            <ul class="nav md-tabs nav-justified mdb-color lighten-1 mx-0 mb-0 mt-1">
+                                <? 
+                                            while ($row11 = mysqli_fetch_array($sql11)){
+                                                $ref="#";
+                                                echo '  <li class="nav-item seritm">
+                                                          <a class="nav-link" href="#' .$row11['pro_Class']. '">'.$row11['cat_Naam'].'</a>
+                                                        </li>';
+                                            }
+                                        
+                                        ?>
+
+                            </ul>
+                        </div>
+                    </nav>
+
+                </div>
+            </div>
+
+            <!-- Sales control Panel -->
+            <div class="salcopa">
+                <? while($row7=mysqli_fetch_array($sql7)){
+                   $service = $row7['ser_Id'];
+                   
+                       switch ($service){
+                           case 1:
+                               echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc1=mysqli_fetch_array($cat1)){
+                                        echo '<button class="btn light-blue lighten-2 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc1['beh_Naam'].'" data-price="'.$rowc1['beh_Prijs'].'" data-duur="'.$rowc1['beh_Duur'].'">'.$rowc1['beh_Naam'].' '.$rowc1['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 2:
+                                echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc2=mysqli_fetch_array($cat2)){
+                                        echo '<button class="btn light-blue lighten-1 darken-2 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc2['beh_Naam'].'" data-price="'.$rowc2['beh_Prijs'].'" data-duur="'.$rowc2['beh_Duur'].'">'.$rowc2['beh_Naam'].' '.$rowc2['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 3:
+                                echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc3=mysqli_fetch_array($cat3)){
+                                        echo '<button class="btn light-blue darken-2 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc3['beh_Naam'].'" data-price="'.$rowc3['beh_Prijs'].'" data-duur="'.$rowc3['beh_Duur'].'">'.$rowc3['beh_Naam'].' '.$rowc3['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 4:
+                                echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc4=mysqli_fetch_array($cat4)){
+                                        echo '<button class="btn light-blue darken-4 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc4['beh_Naam'].'" data-price="'.$rowc4['beh_Prijs'].'" data-duur="'.$rowc4['beh_Duur'].'">'.$rowc4['beh_Naam'].' '.$rowc4['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 5:
+                                echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc5=mysqli_fetch_array($cat5)){
+                                        echo '<button class="btn blue darken-3 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc5['beh_Naam'].'" data-price="'.$rowc5['beh_Prijs'].'" data-duur="'.$rowc5['beh_Duur'].'">'.$rowc5['beh_Naam'].' '.$rowc5['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 6:
+                                echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                                while($rowc6=mysqli_fetch_array($cat6)){
+                                        echo '<button class="btn blue darken-4 btn-lg m-1 p-3" data-soort="s" data-beh="'.$rowc6['beh_Naam'].'" data-price="'.$rowc6['beh_Prijs'].'" data-duur="'.$rowc6['beh_Duur'].'">'.$rowc6['beh_Naam'].' '.$rowc6['beh_Prijs'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                        //   case 8:
+                        //         echo '<div id="'.$row7['ser_class'].'" class="arr">';
+                        //         while($rowc8=mysqli_fetch_array($cat8)){
+                        //                 echo '<button class="btn btn-light-blue btn-sm m-1 p-4" data-beh="'.$rowc8['beh_Naam'].'" data-price="'.$rowc8['beh_Prijs'].'" data-duur="'.$rowc8['beh_Duur'].'">'.$rowc8['beh_Naam'].' '.$rowc8['beh_Prijs'].'</button>';
+                        //             }
+                        //         echo '</div>';
+                        //         break;
+                           
+                       }
+                    }
+               ?>
+
+                <?php   while($row10=mysqli_fetch_array($sql10)){
+                   $prodcat = $row10['ID'];
+                   
+                       switch ($prodcat){
+                           case 11:
+                               echo '<div id="'.$row10['pro_Class'].'" class="arr">';
+                                while($rowc11=mysqli_fetch_array($cat11)){
+                                        echo '<button class="btn '.$rowc11['Color'].' accent-3 btn-sm text-dark m-1 p-2"  data-soort="p" data-beh="'.$rowc11['prodName'].'" data-price="'.$rowc11['prodSalPrice'].'">'.$rowc11['prodName'].' '.$rowc11['prodSalPrice'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 21:
+                                echo '<div id="'.$row10['pro_Class'].'" class="arr">';
+                                while($rowc21=mysqli_fetch_array($cat21)){
+                                        echo '<button class="btn '.$rowc21['Color'].' accent-3 btn-sm text-dark m-1 p-2"  data-soort="p" data-beh="'.$rowc21['prodName'].'" data-price="'.$rowc21['prodSalPrice'].'">'.$rowc21['prodName'].' '.$rowc21['prodSalPrice'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                           case 31:
+                                echo '<div id="'.$row10['pro_Class'].'" class="arr">';
+                                while($rowc31=mysqli_fetch_array($cat31)){
+                                        echo '<button class="btn '.$rowc31['Color'].' accent-3 btn-sm text-dark m-1 p-2" data-soort="p" data-beh="'.$rowc31['prodName'].'" data-price="'.$rowc31['prodSalPrice'].'">'.$rowc31['prodName'].' '.$rowc31['prodSalPrice'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 41:
+                                echo '<div id="'.$row10['pro_Class'].'" class="arr">';
+                                while($rowc41=mysqli_fetch_array($cat41)){
+                                        echo '<button class="btn '.$rowc41['Color'].' accent-3 btn-sm text-dark m-1 p-2" data-soort="p" data-beh="'.$rowc41['prodName'].'" data-price="'.$rowc41['prodSalPrice'].'">'.$rowc41['prodName'].' '.$rowc41['prodSalPrice'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                            case 51:
+                                echo '<div id="'.$row10['pro_Class'].'" class="arr">';
+                                while($rowc51=mysqli_fetch_array($cat51)){
+                                        echo '<button class="btn '.$rowc51['Color'].' accent-3 btn-sm text-dark m-1 p-2" data-soort="p" data-beh="'.$rowc51['prodName'].'" data-price="'.$rowc51['prodSalPrice'].'">'.$rowc51['prodName'].' '.$rowc51['prodSalPrice'].'</button>';
+                                    }
+                                echo '</div>';
+                                break;
+                           
+                       }
+                    }
+               ?>
+
+            </div>
+
+            <div class="salcopap">
+
+            </div>
+            <!--
+           <div class="discopa">
+
+           </div>
+-->
+            <!-- Payment control Panel -->
+            <div class="paycopa">
+                <div class="inner-paycopa">
+                    <button class="btn btn-lg btn-success mx-3 pay">Betalen</button>
+                    <button class="btn btn-lg btn-danger mx-3 cancel">Annuleren</button>
+                </div>
+                <div class="savemsg mt-2">
+
+                </div>
+                 
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+    </main>
+    <form id="NewCus" action="php/NewCus.php" method="post">
+        <div class="close">
+            <div class="fas fa-window-close fa-2x text-danger"></div>
+        </div>
+        <div class="form-title text-center mb-3">
+            <h3>Nieuwe klant aanmaken</h3>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label for="cFirstName"></label>
+                <input type="text" name="cFirstName" class="form-control" placeholder="Voornaam" required>
+            </div>
+            <div class="col">
+                <label for="cLastName"></label>
+                <input type="text" name="cLastName" class="form-control" placeholder="Achternaam" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label for="cEmail"></label>
+                <input type="email" name="cEmail" class="form-control" placeholder="E-mail">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label for="cPhone"></label>
+                <i>+32</i><input type="tel" name="cPhone" class="form-control" placeholder="Telefoonnummer" required>
+            </div>
+            <div class="col">
+                <label for="cDoB"></label>
+                <input type="date" name="cDoB" class="form-control" placeholder="Geboorte datum">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-secondary btn-md my-3">Opslaan</button>
+        <button type="reset" class="btn btn-warning btn-md">Annuleer</button>
+    </form>
+
+    <!-- Klanten formulier -->
+
+    <!--    Modal VOEG NIEUWE KLANT TOE   -->
+
+    <div class="modal modal-fluid fade" id="modalAddKlant" tabindex="-1" role="dialog" aria-hidden="true">
+
+        <div class="modal-dialog cascading-modal" role="document">
+
+            <div class="modal-content">
+
+                <div class="modal-header mdb-color text-center text-white">
+
+                    <h5 class="mb-0 font-weight-bold">Maak nieuwe klant</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="md-form form-sm">
+
+                                <input type="text" id="aVN" class="form-control" required>
+                                <label for="aVN" class="" data-error="Verplicht Veld" data-succes="Ok">Voornaam</label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="md-form form-sm">
+
+                                <input type="text" id="aAN" class="form-control" required>
+                                <label for="aAN" class="" data-error="Verplicht veld" data-succes="Ok">Achternaam</label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <div class="md-form form-sm">
+
+                                <input type="email" id="aEM" class="form-control">
+                                <label for="aEM" class="" data-error="" data-succes="Ok">E-mail</label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="md-form form-sm">
+
+                                <input type="text" id="aPN" class="form-control" required>
+                                <label for="aPN" data-error="Verplicht veld!" data-success="Ok!">Telefoon</label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="md-form form-sm">
+
+                                <input type="date" id="aGD" class="form-control">
+                                <label for="aGD" data-success="Ok!"></label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <div class="md-form form-sm">
+
+                                <textarea class="md-textarea form-control" id="aEI"></textarea>
+                                <label for="aEI" data-success="Ok!">Extra Info</label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="md-form col-md-12">
+
+                            <div class="status">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-12 text-center">
+
+                            <button id="btn_aNK" class="btn btn-mdb-color btn-rounded waves-effect">Submit</button>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!--    /Modal VOEG NIEUWE KLANT TOE   -->
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="js/mdb.js"></script>
+    <!-- Custom Script -->
+    <script src="js/posmdb.js"></script>
+    <script src="js/posscript.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.mdb-select').materialSelect();
+        });
+
+    </script>
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+-->
+    <!--
+<script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+-->
+</body>
+
+</html>
